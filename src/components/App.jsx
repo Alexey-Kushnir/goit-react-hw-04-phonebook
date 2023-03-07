@@ -1,59 +1,67 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import { nanoid } from 'nanoid';
 import { Section } from './Section/Section';
 import { ContactsInput } from './ContactsInput/ContactsInput';
 import { ContactsStorage } from './ContactsStorage/ContactsStorage';
 import { Filter } from './Filter/Filter';
 
-export class App extends Component {
-  state = {
-    contacts: [],
-    filter: '',
-  };
-
-  componentDidMount() {
-    const contactList = JSON.parse(localStorage.getItem('contacts'));
-
-    if (contactList) {
-      this.setState({ contacts: contactList });
-    }
+const getContacts = () => {
+  const contactList = JSON.parse(localStorage.getItem('contacts'));
+  if (contactList) {
+    return contactList;
   }
+  return [];
+};
 
-  componentDidUpdate(prevProps, prevState) {
-    const newContacts = this.state.contacts;
-    const prevContacts = prevState.contacts;
+export const App = () => {
+  const [contacts, setContacts] = useState([]);
+  const [filter, setFilter] = useState('');
 
-    if (newContacts !== prevContacts) {
-      localStorage.setItem('contacts', JSON.stringify(newContacts));
-    }
-  }
+  useEffect(() => {
+    localStorage.setItem('contacts', JSON.stringify(contacts));
+  }, [contacts]);
 
-  addContact = ({ name, number }, { resetForm }) => {
+  const addContact = ({ name, number }, { resetForm }) => {
     // console.log(name, number, resetForm);
     // const contactName = name.toLowerCase();
+    // console.dir(contacts);
 
-    if (this.state.contacts.some(contact => contact.name === name)) {
-      return alert(`${name} is already in contacts.`);
-    }
+    // if (contacts.some(contact => contact.name === name)) {
+    //   return alert(`${name} is already in contacts.`);
+    // }
 
-    this.setState(({ contacts }) => ({
-      contacts: [{ id: nanoid(8), name, number }, ...contacts],
-    }));
+    // this.setState(({ contacts }) => ({
+    //   contacts: [{ id: nanoid(8), name, number }, ...contacts],
+    // }));
+    const newContact = { id: nanoid(8), name, number };
+
+    console.log(newContact);
+    console.log(contacts);
+
+    // setContacts(contacts.push(newContact));
+    setContacts(prevState => [...prevState.contacts, newContact]);
+
     return resetForm();
   };
 
-  deleteContact = contactId => {
-    this.setState(prevState => ({
-      contacts: prevState.contacts.filter(contact => contact.id !== contactId),
-    }));
+  const deleteContact = contactId => {
+    setContacts(contacts => {
+      contacts.filter(contact => contact.id !== contactId);
+    });
   };
 
-  changeFilter = e => {
-    this.setState({ filter: e.currentTarget.value });
+  // const deleteContact = contactId => {
+  //   setContacts(prevState => {
+  //     prevState.filter(contact => contact.id !== contactId);
+  //   });
+  // };
+
+  const changeFilter = e => {
+    setFilter(e.currentTarget.value);
   };
 
-  getVisibleContacts = () => {
-    const { filter, contacts } = this.state;
+  const getVisibleContacts = () => {
+    // const { filter, contacts } = this.state;
     const normalizedFilter = filter.toLowerCase();
 
     return contacts.filter(contact =>
@@ -61,38 +69,36 @@ export class App extends Component {
     );
   };
 
-  render() {
-    const { addContact, changeFilter, getVisibleContacts, deleteContact } =
-      this;
-    const { contacts, filter } = this.state;
+  // const { addContact, changeFilter, getVisibleContacts, deleteContact } =
+  //   this;
+  // const { contacts, filter } = this.state;
+  // console.log(contacts);
 
-    return (
-      <div
-        style={{
-          // height: '100vh',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          fontSize: 40,
-          color: '#010101',
-        }}
-      >
-        <Section title="Phonebook">
-          <ContactsInput onSubmit={addContact} />
-        </Section>
-        <Section title="Contacts">
-          {contacts.length > 0 && (
-            <>
-              <Filter value={filter} onChange={changeFilter} />
-              <ContactsStorage
-                contactList={getVisibleContacts()}
-                onDeleteContact={deleteContact}
-              />
-            </>
-          )}
-        </Section>
-      </div>
-    );
-  }
-}
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        fontSize: 40,
+        color: '#010101',
+      }}
+    >
+      <Section title="Phonebook">
+        <ContactsInput onSubmit={addContact} />
+      </Section>
+      <Section title="Contacts">
+        {contacts.length > 0 && (
+          <>
+            <Filter value={filter} onChange={changeFilter} />
+            <ContactsStorage
+              contactList={getVisibleContacts}
+              onDeleteContact={deleteContact}
+            />
+          </>
+        )}
+      </Section>
+    </div>
+  );
+};
