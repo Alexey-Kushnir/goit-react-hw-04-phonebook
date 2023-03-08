@@ -30,13 +30,7 @@ export const App = () => {
       return alert(`${name} is already in contacts.`);
     }
 
-    //не работает
-    // const newContact = { id: nanoid(8), name, number };
-    // setContacts(contacts.push(newContact));
-
-    //работает
     setContacts(() => [...contacts, { id: nanoid(8), name, number }]);
-
     return resetForm();
   };
 
