@@ -14,65 +14,53 @@ const getContacts = () => {
 };
 
 export const App = () => {
-  const [contacts, setContacts] = useState([]);
-  const [filter, setFilter] = useState('');
+  const [contacts, setContacts] = useState(getContacts);
+  const [filterValue, setFilterValue] = useState('');
 
   useEffect(() => {
     localStorage.setItem('contacts', JSON.stringify(contacts));
   }, [contacts]);
 
   const addContact = ({ name, number }, { resetForm }) => {
-    // console.log(name, number, resetForm);
-    // const contactName = name.toLowerCase();
-    // console.dir(contacts);
+    if (
+      contacts.some(
+        contact => contact.name.toLowerCase() === name.toLowerCase()
+      )
+    ) {
+      return alert(`${name} is already in contacts.`);
+    }
 
-    // if (contacts.some(contact => contact.name === name)) {
-    //   return alert(`${name} is already in contacts.`);
-    // }
-
-    // this.setState(({ contacts }) => ({
-    //   contacts: [{ id: nanoid(8), name, number }, ...contacts],
-    // }));
-    const newContact = { id: nanoid(8), name, number };
-
-    console.log(newContact);
-    console.log(contacts);
-
+    //не работает
+    // const newContact = { id: nanoid(8), name, number };
     // setContacts(contacts.push(newContact));
-    setContacts(prevState => [...prevState.contacts, newContact]);
+
+    //работает
+    setContacts(() => [...contacts, { id: nanoid(8), name, number }]);
 
     return resetForm();
   };
 
   const deleteContact = contactId => {
-    setContacts(contacts => {
-      contacts.filter(contact => contact.id !== contactId);
-    });
+    //не работает
+    // setContacts(prevState => {
+    //   prevState.filter(contact => contact.id !== contactId);
+    // });
+
+    //работает
+    setContacts(contacts.filter(contact => contact.id !== contactId));
   };
 
-  // const deleteContact = contactId => {
-  //   setContacts(prevState => {
-  //     prevState.filter(contact => contact.id !== contactId);
-  //   });
-  // };
-
   const changeFilter = e => {
-    setFilter(e.currentTarget.value);
+    setFilterValue(e.currentTarget.value);
   };
 
   const getVisibleContacts = () => {
-    // const { filter, contacts } = this.state;
-    const normalizedFilter = filter.toLowerCase();
+    const normalizedFilter = filterValue.toLowerCase();
 
     return contacts.filter(contact =>
       contact.name.toLowerCase().includes(normalizedFilter)
     );
   };
-
-  // const { addContact, changeFilter, getVisibleContacts, deleteContact } =
-  //   this;
-  // const { contacts, filter } = this.state;
-  // console.log(contacts);
 
   return (
     <div
@@ -91,9 +79,9 @@ export const App = () => {
       <Section title="Contacts">
         {contacts.length > 0 && (
           <>
-            <Filter value={filter} onChange={changeFilter} />
+            <Filter value={filterValue} onChange={changeFilter} />
             <ContactsStorage
-              contactList={getVisibleContacts}
+              contactList={getVisibleContacts()}
               onDeleteContact={deleteContact}
             />
           </>
