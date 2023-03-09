@@ -30,18 +30,18 @@ export const App = () => {
       return alert(`${name} is already in contacts.`);
     }
 
-    setContacts([...contacts, { id: nanoid(8), name, number }]);
+    setContacts(prevState => [...prevState, { id: nanoid(8), name, number }]);
     return resetForm();
   };
 
   const deleteContact = contactId => {
-    //не работает
-    // setContacts(prevState => {
-    //   prevState.filter(contact => contact.id !== contactId);
-    // });
+    //как лучше делать? так:
+    setContacts(prevState => {
+      return prevState.filter(contact => contact.id !== contactId);
+    });
 
-    //работает
-    setContacts(contacts.filter(contact => contact.id !== contactId));
+    //или так?
+    // setContacts(contacts.filter(contact => contact.id !== contactId));
   };
 
   const changeFilter = e => {
