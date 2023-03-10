@@ -36,12 +36,12 @@ export const App = () => {
 
   const deleteContact = contactId => {
     //как лучше делать? так:
-    setContacts(prevState => {
-      return prevState.filter(contact => contact.id !== contactId);
-    });
+    // setContacts(prevState => {
+    //   return prevState.filter(contact => contact.id !== contactId);
+    // });
 
     //или так?
-    // setContacts(contacts.filter(contact => contact.id !== contactId));
+    setContacts(contacts.filter(contact => contact.id !== contactId));
   };
 
   const changeFilter = e => {

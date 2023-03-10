@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types';
-// import { ContactItem } from './ContactsStorage.styled';
 import { FilterTitle, FilterInput } from './Filter.styled';
 
 export const Filter = ({ value, onChange }) => {
